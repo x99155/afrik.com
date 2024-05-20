@@ -1,34 +1,29 @@
-version: '3'
+version: '3' # Cela indique que nous utilisons la version 3 de la syntaxe Docker Compose
+
 services:
   postgres:
-    image: postgres:16
-    environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
+    image: postgres:latest
+    environment: # Définit les variables d'environnement pour configurer PostgreSQL.
+      POSTGRES_USER: airflow 
+      POSTGRES_PASSWORD: airflow 
       POSTGRES_DB: airflow
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "5432:5432" # Expose le port 5432 du conteneur PostgreSQL sur le port 5432 de l'hôte.
+    networks:
+      - etl_network
+    volumes: # Monte un volume nommé postgres_data pour persister les données de PostgreSQL.
+      - ./postgres_data/createdb.sql:/var/lib/postgresql/createdb.sql
 
-  airflow:
-    build: .
-    environment:
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/afrikdb
-      AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
+  scraper:
+    build:
+      context: ./scraper
+      dockerfile: Dockerfile
+    command: ["python", "scraper.py"]
+    networks:
+      - etl_network
     depends_on:
       - postgres
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./dags:/opt/airflow/dags
-    command: >
-      bash -c "
-      airflow db init &&
-      airflow users create --username admin --password admin --firstname Air --lastname Flow --role Admin --email admin@example.com &&
-      airflow webserver &
-      airflow scheduler
-      "
-
-volumes:
-  postgres_data:
+      
+networks:
+  etl_network:
+    driver: bridge

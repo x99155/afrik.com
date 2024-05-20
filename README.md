@@ -1,4 +1,4 @@
-# Afrik Scraper Project
+# Afrik.com Scraper Project
 
 Ce projet scrape les nouveaux articles de afrik.com et les stocke dans une base de données PostgreSQL, automatisé avec Apache Airflow et Docker.
 

@@ -1,5 +1,5 @@
 -- Create database
-CREATE DATABASE afrikdb;
+--CREATE DATABASE airflow;
 
 -- Create table
 CREATE TABLE articles (
