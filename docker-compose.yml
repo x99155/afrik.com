@@ -1,11 +1,11 @@
 version: '3'
 services:
   postgres:
-    image: postgres:13
+    image: postgres:16
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: juana
-      POSTGRES_DB: afrikdb
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
     ports:
       - "5432:5432"
     volumes:
@@ -14,7 +14,7 @@ services:
   airflow:
     build: .
     environment:
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:juana@postgres/afrikdb
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/afrikdb
       AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
     depends_on:
       - postgres
