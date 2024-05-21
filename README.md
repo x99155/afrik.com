@@ -31,9 +31,9 @@ Ce projet scrape les nouveaux articles de afrik.com et les stocke dans une base 
 4. Accédez à l'interface web d'Airflow sur `http://localhost:8080` et activez le DAG `scraper`.
 
 5. Accédez à la base de donnée:
-docker exec -it <nom du conteneur postgres> psql -U airflow : se connecter avec à l'utilisateur airflow
-\c airflow : pour se connecter à la bdd airflow
-\dt: liste les bdd
-vous devriez voir la table 'articles'
-select * from articles; pour voir qu'elle contient bien les data scraper sur le site afrik.com (le dernier article publié)
+- docker exec -it <nom du conteneur postgres> psql -U airflow : se connecter avec à l'utilisateur airflow
+- \c airflow : pour se connecter à la bdd airflow
+- \dt: liste les bdd
+- vous devriez voir la table 'articles'
+- select * from articles; pour voir qu'elle contient bien les data scraper sur le site afrik.com (le dernier article publié)
 
