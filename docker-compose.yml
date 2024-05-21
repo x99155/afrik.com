@@ -32,6 +32,7 @@ services:
       - etl_network
     environment:
       AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
     command: >
       bash -c "
       airflow db init &&
