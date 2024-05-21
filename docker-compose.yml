@@ -23,6 +23,73 @@ services:
       - etl_network
     depends_on:
       - postgres
+
+  init-airflow:
+    image: apache/airflow:latest
+    depends_on:
+      - postgres
+    networks:
+      - etl_network
+    environment:
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    command: >
+      bash -c "
+      airflow db init &&
+      airflow users create --username admin --password admin --firstname Air --lastname Flow --role Admin --email admin@example.com
+      "
+
+  webserver:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    user: root
+    depends_on:
+      - postgres
+    networks:
+      - etl_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./scraper:/opt/airflow/scraper
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      EXECUTOR: Local
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__WEBSERVER__DEFAULT__USER_USERNAME: airflow
+      AIRFLOW__WEBSERVER__DEFAULT__USER_PASSWORD: airflow
+      AIRFLOW__WWW__USER__USER_USERNAME: airflow
+      AIRFLOW__WWW__USER__USER_PASSWORD: airflow
+      AIRFLOW__WEBSERVER__SECRET_KEY: secret
+    ports:
+      - "8080:8080"
+    command: webserver
+
+  scheduler:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    user: root
+    depends_on:
+      - postgres
+    networks:
+      - etl_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./scraper:/opt/airflow/scraper
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      EXECUTOR: Local
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgres+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__WEBSERVER__DEFAULT__USER_USERNAME: airflow
+      AIRFLOW__WEBSERVER__DEFAULT__USER_PASSWORD: airflow
+      AIRFLOW__WWW__USER__USER_USERNAME: airflow
+      AIRFLOW__WWW__USER__USER_PASSWORD: airflow
+      AIRFLOW__WEBSERVER__SECRET_KEY: secret
+    command: scheduler
+
       
 networks:
   etl_network:
